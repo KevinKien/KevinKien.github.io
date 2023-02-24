@@ -125,7 +125,7 @@ def brute_flag():
             length_of_flag = i
             break
         
-    print("length flag is: %s " % str(length_of_flag))
+    print("length flag is: \%s " \% str(length_of_flag))
 if __name__ == "__main__":
     brute_flag()
 ```
@@ -157,7 +157,7 @@ def brute_force_flag():
                 flag = flag + alphabet[i]
                 break
 
-    print("flag is: HTB{%s}" % str(flag))
+    print("flag is: HTB\{\%s\}" \% str(flag))
 if __name__ == "__main__":
     brute_force_flag()
 ```
