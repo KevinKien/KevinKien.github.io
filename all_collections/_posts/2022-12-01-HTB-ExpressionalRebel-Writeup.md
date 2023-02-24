@@ -34,7 +34,7 @@ Tuy nhiên, quay lại chức năng ```deactivate```, chức năng này có hàm
 
 ![Imgur](https://i.imgur.com/dy8dcNN.png)
 
-Hàm isLocal kiểm tra xem ```remoteAddress``` có phải từ 127.0.0.1 và ```host``` là 127.0.0.1:1337 hay không. Vì vậy, điều đó có nghĩa là chức năng này chỉ có thể truy cập được từ máy chủ cục bộ.
+Hàm isLocal kiểm tra xem ```remoteAddress``` có phải từ 127.0.0.1 và ```host``` là 127.0.0.1:1337 hay không. Vì vậy, điều đó có nghĩa là chức năng này chỉ có thể truy cập được từ localhost.
 
 Tiếp theo mình tiến hành phân tích tệp api.js.
 
@@ -91,7 +91,7 @@ Cách trên có thể bypass hàm ```isLocalhost```` một cách dễ dàng. Đ�
 
 Vậy làm thế nào để có được flag. Quay lại hàm ```deactivate ```, trong hàm ```validateSecret``` có một regex kiểm tra xem secret có khớp với flag hay không. Và chức năng request chỉ có thể truy cập qua localhost.
 
-Kết hợp với chức năng ```evaluate```, mình có thể truy cập chức năng hủy kích hoạt bằng cách bypass ở trên.
+Kết hợp với chức năng ```evaluate```, mình có thể truy cập chức năng ```deactivate``` bằng cách bypass ở trên.
 
 ![Imgur](https://i.imgur.com/Ke2dyWM.png)
 
