@@ -102,7 +102,7 @@ Với dữ liệu secret regex với flag, mình đã tìm kiếm các thông ti
 - [https://portswigger.net/daily-swig/blind-regex-injection-theoretical-exploit-offers-new-way-to-force-web-apps-to-spill-secrets](https://portswigger.net/daily-swig/blind-regex-injection-theoretical-exploit-offers-new-way-to-force-web-apps-to-spill-secrets)
 - [https://diary.shift-js.info/blind-regular-expression-injection/](https://diary.shift-js.info/blind-regular-expression-injection/)
 
-Theo thông tin mình đọc được thì khi input đoạn regex ```^(?=.{1})((.))*salt$``` nếu ra kết quả đúng thì request sẽ mất hơn 2s để thực hiện. Và nếu sai, yêu cầu sẽ thực hiện rất nhanh.
+Theo thông tin mình đọc được thì khi input đoạn regex ```^\(?=.\{1\})\(\(.\)\)*salt$``` nếu ra kết quả đúng thì request sẽ mất hơn 2s để thực hiện. Và nếu sai, yêu cầu sẽ thực hiện rất nhanh.
 
 ![Imgur](https://i.imgur.com/CKjF82e.png)
 
