@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Cách Hoạt Động Của CDN
-date: 2022-11-24
+date: 2023-3-3
 categories: ["system"]
 ---
 
