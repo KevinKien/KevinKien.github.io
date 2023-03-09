@@ -96,3 +96,60 @@ nmap -sV --script=http-enum <target> -p 80,443,8000,8080
 
 ## Directory Brute-force with Gobuster
 
+Gobuster sẽ giúp cho bạn thực hiện brute force các URI của mục tiêu và cả subdomain nữa. Và từ đó giúp bạn tìm kiếm ra các URI ẩn hoặc các subdomain mà bạn chưa biết. 
+
+```
+$ gobuster dir -u target-name.com:8000 -w /home/hapihacker/api/wordlists/common_apis_160
+========================================================
+Gobuster
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+========================================================
+[+] Url:                     http://192.168.195.132:8000
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /home/hapihacker/api/wordlists/common_apis_160
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster
+[+] Timeout:                 10s
+========================================================
+09:40:11 Starting gobuster in directory enumeration mode
+========================================================
+/api                (Status: 200) [Size: 253]
+/admin                (Status: 500) [Size: 1179]
+/admins               (Status: 500) [Size: 1179]
+/login                (Status: 200) [Size: 2833]
+/register             (Status: 200) [Size: 2846]
+```
+
+## Kiterunner
+
+Kiterunner hiện là công cụ tốt nhất để khám phá các tài nguyên và điểm cuối API. Mặc dù các công cụ cũng brute force như Gobuster để khám phá các đường dẫn URL, nhưng nó thường dựa vào các yêu cầu HTTP GET tiêu chuẩn. Kiterunner sẽ không chỉ sử dụng tất cả các phương thức yêu cầu HTTP phổ biến với API (GET, POST, PUT và DELETE) mà còn bắt chước các cấu trúc đường dẫn API phổ biến. Nói cách khác, thay vì yêu cầu GET /api/v1/user/create, Kiterunner sẽ thử POST /api/v1/user/create, bắt chước một yêu cầu thực tế hơn.
+
+```
+kr scan HTTP://127.0.0.1 -w ~/api/wordlists/data/kiterunner/routes-large.kite
+```
+
+![Imgur](https://i.imgur.com/xRsZZvL.png)
+
+## DevTools
+
+Một công cụ ngay trên trình duyệt, nó sẽ giúp bạn tìm kiếm các API mà website try cập vào. Từ DevTools bạn có thể search các keyword như api, graphql. 
+
+![Imgur](https://i.imgur.com/xVMl0Je.png)
+
+## OWASP Amass
+
+OWASP Amass là một công cụ dòng lệnh có thể ánh xạ mạng bên ngoài của mục tiêu bằng cách thu thập OSINT từ hơn 55 nguồn khác nhau. Bạn có thể đặt nó để thực hiện quét passice hoặc active. Amass sẽ thu thập dữ liệu từ các công cụ tìm kiếm (chẳng hạn như Google, Bing và HackerOne), các nguồn chứng chỉ SSL (chẳng hạn như GoogleCT, Censys và FacebookCT), các API tìm kiếm (chẳng hạn như Shodan, AlienVault, Cloudflare và GitHub) và kho lưu trữ web Wayback.
+
+Qua đó, thì bạn hãy tận dụng công cụ để thực hiện scan các subdomain hay brute force các URI về API.
+
+```
+amass enum -active -d target-name.com |grep api
+legacy-api.target-name.com
+api1-backup.target-name.com
+api3-backup.target-name.com
+```
+
+```
+amass enum -active -brute -w /usr/share/wordlists/API_superlist -d [target domain] -dir [directory name] 
+```
