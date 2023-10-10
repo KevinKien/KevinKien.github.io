@@ -58,4 +58,11 @@ Sau khi nhận được kết quả biên dịch, copy giá trị input từ rem
 
 ![](https://static.wixstatic.com/media/935a00_25371a89bdbb40228a009c0da2704f5c~mv2.png/v1/fill/w_740,h_399,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/935a00_25371a89bdbb40228a009c0da2704f5c~mv2.png)
 
+sau khi copy chúng ra được giá trị
+
+0x6080604052603f8060116000396000f3fe6080604052600080fdfea2646970667358221220d03248cf82928931c158551724bebac67e407e6f3f324f930c4cf1c36e16328764736f6c63430008110033
+
+Đoạn code trên được chia thành 2 phần
+
+![](https://static.wixstatic.com/media/935a00_b7ef73f4ed484fea99a315c0efd0f691~mv2.png/v1/fill/w_740,h_240,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/935a00_b7ef73f4ed484fea99a315c0efd0f691~mv2.png)
 
