@@ -15,4 +15,6 @@ categories: ["Smart Contract"]
 
 Chúng được gọi là ```creation code```. EVM bắt đầu thực thi init code. Nếu init code được encoded đúng cách, việc thực thi này sẽ được lưu vào ```runtime code``` trên blockchain. 
 
-Không có gì bên trong đặc tả EVM
+Không có gì bên trong đặc tả EVM, điều đó nói rằng bố cục cần phải init code, runtime code và constructor parameters. Nó có thể là init code, constructor parameters và sau đó runtime code. Điều này là quy ước đơn giản để solidity sử dụng. Tuy nhiên, init code cần là phần đầu tiên cho EVM để biết được nơi bắt đầu thực thi. 
+
+
