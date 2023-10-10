@@ -38,4 +38,24 @@ contract GetCreationCode {
 }
 ```
 
+# Init code
+
+Init code là 1 phần của creation code chịu trách nhiệm cho triển khai 1 contract. 
+
+## Payable constructor contract
+
+```
+pragma solidity 0.8.17;// optimizer: 200 runs
+
+contract Minimal {
+    constructor() payable {
+
+    }
+}
+```
+
+Sau khi nhận được kết quả biên dịch, copy giá trị input từ remix sau khi thực thi giao dịch triển khai. 
+
+![](https://static.wixstatic.com/media/935a00_25371a89bdbb40228a009c0da2704f5c~mv2.png/v1/fill/w_740,h_399,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/935a00_25371a89bdbb40228a009c0da2704f5c~mv2.png)
+
 
