@@ -68,3 +68,28 @@ sau khi copy chúng ra được giá trị
 
 ![](https://static.wixstatic.com/media/935a00_b7ef73f4ed484fea99a315c0efd0f691~mv2.png/v1/fill/w_740,h_240,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/935a00_b7ef73f4ed484fea99a315c0efd0f691~mv2.png)
 
+Nó có vẻ giống như chúng ta chia bytecode ở 1 nơi nào đó ngẫu nhiên, nhưng nó sẽ được giải thích cụ thể sau
+
+Nếu copy và paste phần đầu tiên vào evm code, và convert bytecode thành mnemonics, chúng ta lấy được [output](https://www.evm.codes/playground?fork=merge&unit=Wei&codeType=Bytecode&code=%276080604052603f8060116000396000f3fe%27) 
+
+```
+// allocate free memory pointer
+PUSH1 0x80
+PUSH1 0x40
+MSTORE
+
+// length of the runtime code
+PUSH1 0x3f 
+DUP1
+
+// where the runtime code begins
+PUSH1 0x11 
+PUSH1 0x00// copy the runtime code from calldata into memory
+CODECOPY
+
+// runtime code is deployed at this step
+PUSH1 0x00
+RETURN
+INVALID
+```
+
