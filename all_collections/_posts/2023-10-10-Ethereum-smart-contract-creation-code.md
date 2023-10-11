@@ -111,3 +111,13 @@ contract Minimal {
 }
 ```
 
+hãy nhìn vào bytecode khi constructor không có payable và nhìn sự khác biệt. Đây là kết quả biên dịch
+
+```
+6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220a6271a05446e269126897aea62fd14e86be796da8d741df53bdefd75ceb4703564736f6c63430008070033
+```
+
+Chúng được chia thành init và runtime code
+
+![](https://static.wixstatic.com/media/935a00_87200a2c332346488c67cc4d575205c7~mv2.png/v1/fill/w_740,h_148,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/935a00_87200a2c332346488c67cc4d575205c7~mv2.png)
+
