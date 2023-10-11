@@ -60,7 +60,9 @@ Sau khi nhận được kết quả biên dịch, copy giá trị input từ rem
 
 sau khi copy chúng ra được giá trị
 
+```
 0x6080604052603f8060116000396000f3fe6080604052600080fdfea2646970667358221220d03248cf82928931c158551724bebac67e407e6f3f324f930c4cf1c36e16328764736f6c63430008110033
+```
 
 Đoạn code trên được chia thành 2 phần
 
