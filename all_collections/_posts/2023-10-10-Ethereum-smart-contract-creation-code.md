@@ -93,3 +93,21 @@ RETURN
 INVALID
 ```
 
+Trong phần code được highlight, được gọi là runtime code, có kích thước là 63 bytes (0x3f trong hexadecimal). Nó bắt đầu tại 17th (0x11 trong hexadecimal) trong bộ nhớ. Điều này giải thích nơi giá trị của 0x3f và 0x11 lấy từ trong mnemonics. 
+
+Trên level cao hơn, theo dõi 3 hành động ở trong init code: 
+- con trỏ bộ nhớ trống, cái mà theo dõi vị trí bộ nhớ còn trống tiếp theo để ghi.
+- runtime code thì sẽ copy vào vị trị bộ nhớ đó sử dụn "CODECOPY" opcode
+- Cuối cùng, vùng nhớ có chứa runtime code trả về EVM, lưu trữ hợp đồng mới theo dạng runtime bytecode.
+
+## Non-payable constructor contract
+
+```
+pragma solidity 0.8.17;// optimizer: 200 runs
+contract Minimal {
+    constructor() {
+
+    }
+}
+```
+
