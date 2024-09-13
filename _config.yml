@@ -1,11 +1,11 @@
-title: Kevin Kien
+title: Kevin K Kien
 markdown: kramdown
 url: ""
 baseurl: "/"
 
 # for atom feed
 author:
-  name: Kevin Kien
+  name: Kevin K Kien
 
 plugins:
   - jemoji
