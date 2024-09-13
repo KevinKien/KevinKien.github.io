@@ -11,13 +11,12 @@ This post is will use Terraform config from [https://github.com/bridgecrewio/ter
 
 # Building checklist
 
-With S3 i have checklist include: 
+With S3 i have checklist for audit include: 
 - Bucket is public
 - Use SSL/TLS on the connection
 - Encrypt data
 - Access control with IAM policies and bucket policies
 - Enable logging and versioning
-- Config `force_destroy = true`
 
 # S3 Terraform config
 
@@ -166,4 +165,6 @@ resource "aws_s3_bucket" "logs" {
   })
 }
 ```
+
+# Audit config
 
