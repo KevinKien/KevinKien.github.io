@@ -7,7 +7,7 @@ categories: ["AWSSecurity"]
 
 # Summary
 
-This post is will use Terraform config from [https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/ec2.tf.](https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/s3.tf). I will perform building checklist security for S3 and after review config s3.tf and give out result misconfigration from config s3.tf. Finnal, i will provide solution and config prevent for Terraform config.
+This post is will use Terraform config from [https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/ec2.tf](https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/s3.tf). I will perform building checklist security for S3 and after review config s3.tf and give out result misconfigration from config s3.tf. Finnal, i will provide solution and config prevent for Terraform config.
 
 # Building checklist
 
@@ -48,7 +48,7 @@ resource "aws_s3_bucket" "data" {
 
 # Audit config
 
-I will perform review security for each resource. The first with bucket data. 
+I will perform review security for each resource. The first with bucket `data`. 
 
 ```
 resource "aws_s3_bucket" "data" {
@@ -85,6 +85,7 @@ When not config version for bucket, when file deteled is difficult can restore.
 ```
 acl    = "private"
 ```
+
 - Config access control with IAM policies and bucket policies
 ```
 policy = jsonencode({
@@ -104,6 +105,7 @@ policy = jsonencode({
     ]
   })
 ```
+
 - Encrypt with KMS
 ```
 server_side_encryption_configuration {
@@ -115,6 +117,7 @@ server_side_encryption_configuration {
     }
   }
 ```
+
 - Enable logging and versining
 ```
 versioning {
@@ -125,6 +128,7 @@ logging {
   target_prefix = "log/"
 }
 ```
+
 - Enable SSL/TLS on the connection
 ```
 policy = jsonencode({
