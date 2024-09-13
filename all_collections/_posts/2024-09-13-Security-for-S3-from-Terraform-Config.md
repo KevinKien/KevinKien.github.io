@@ -2,7 +2,7 @@
 layout: post
 title: Security for S3 from Terraform Config
 date: 2024-09-13
-categories: ["AWSSecurity"]
+categories: ["AWS Security"]
 ---
 
 # Summary
