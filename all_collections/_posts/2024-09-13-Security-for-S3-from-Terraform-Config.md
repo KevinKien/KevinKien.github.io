@@ -48,7 +48,7 @@ resource "aws_s3_bucket" "data" {
 
 # Audit config
 
-I will perform review security for each resource. The first with bucket data. 
+I will perform review security for each resource. The first with bucket `data`. 
 
 ```
 resource "aws_s3_bucket" "data" {
