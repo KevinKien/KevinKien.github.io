@@ -173,22 +173,37 @@ resource "aws_s3_bucket" "data" {
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
+      # Allow Access for specific IAM Role/User
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::123456789012:role/your-role" # IAM Role or IAM User ARN
+        }
+        Action   = "s3:*" # Allow all actions, modify as per your need
+        Resource = [
+          "${aws_s3_bucket.secure_bucket.arn}",
+          "${aws_s3_bucket.secure_bucket.arn}/*"
+        ]
+      },
+
+      # Deny access if not using SSL/TLS (SecureTransport)
       {
         Effect = "Deny",
-        Principal = "*",
-        Action = "s3:*",
+        Principal = "*", # Applies to all users
+        Action   = "s3:*", # Deny all actions if accessed without SSL/TLS
         Resource = [
           "${aws_s3_bucket.secure_bucket.arn}",
           "${aws_s3_bucket.secure_bucket.arn}/*"
         ],
         Condition = {
           Bool = {
-            "aws:SecureTransport" = "false" # deny if access to bucket with HTTP
+            "aws:SecureTransport" = "false" # Deny if access over HTTP
           }
         }
       }
     ]
   })
+}
   tags = merge({
     Name        = "${local.resource_prefix.value}-data"
     Environment = local.resource_prefix.value
