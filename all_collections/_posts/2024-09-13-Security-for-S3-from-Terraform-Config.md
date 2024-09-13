@@ -12,7 +12,7 @@ This post is will use Terraform config from [terraform/aws/ec2.tf](https://githu
 # Building checklist
 
 With S3 i have checklist for audit include: 
-- Bucket is public
+- Bucket is private
 - Use SSL/TLS on the connection
 - Encrypt data
 - Access control with IAM policies and bucket policies
