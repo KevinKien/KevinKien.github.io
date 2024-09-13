@@ -1,0 +1,12 @@
+---
+layout: post
+title: Security for KMS from Terraform Config
+date: 2024-09-13
+categories: ["AWS Security", "KMS"]
+---
+
+# Summary
+
+This post is will use Terraform config from [terraform/aws/kms.tf](https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/kms.tf). I will perform building checklist security for KMS and after review config kms.tf and give out result misconfigration from config kms.tf. Finnal, i will provide solution and config prevent for Terraform config.
+
+# Building checklist
