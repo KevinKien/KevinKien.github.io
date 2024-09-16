@@ -10,7 +10,11 @@ categories: ["AWS Security", "KMS"]
 This post is will use Terraform config from [terraform/aws/kms.tf](https://github.com/bridgecrewio/terragoat/blob/master/terraform/aws/kms.tf). I will perform building checklist security for KMS and after review config kms.tf and give out result misconfigration from config kms.tf. Finnal, i will provide solution and config prevent for Terraform config.
 
 # Building checklist
-
+I have a checklist with best practice include:
+- Key rotation
+- KMS key policy
+- Deletion window
+- Use SSL/TLS
 
 # KMS Terraform Config
 
