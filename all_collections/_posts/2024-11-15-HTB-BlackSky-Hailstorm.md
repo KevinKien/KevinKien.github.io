@@ -205,17 +205,33 @@ Nào check xem key trên identity như thế nào
 
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy.png)
 
+Key này có role tên là FreightAPI. Mình xem tiếp role name này có những policy nào
 
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy2.png)
 
-
+Trên này có 1 policy là `AWSLambdaBasicExecutionRole`. Mình sẽ xem chi tiết policy `AWSLambdaBasicExecutionRole`.
 
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy3.png)
 
-
+Tại đây mình thấy được policy `AWSLambdaBasicExecutionRole` có 2 version.
 
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy4.png)
 
-
+Đây là chi tiết policy của v1. Có các action sau:
+- IAM: SetDefaultPolicyVersion, ListAttachedRolePolicies, ListPolicyVersions, GetPolicyVersion
+- Logs: CreateLogGroup
 
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy5.png)
+
+và đây là chi tiết policy của v2. Có các action sau:
+- IAM: SetDefaultPolicyVersion, ListAttachedRolePolicies, ListPolicyVersions
+- Logs: CreateLogGroup, CreateLogStream, PutLogEvents
+- ECR: DescribeRepositories, DescribeImages, GetAuthorizationToken, BatchGetImage, GetDownloadUrlForLayer
+
+Xem cả 2 policy v1 và v2 đều đang đặt `AWSLambdaBasicExecutionRole` với iam là `SetDefaultPolicyVersion`. Từ đây mình có thể set policy cho `AWSLambdaBasicExecutionRole`.
+
+
+
+
+
+
