@@ -109,6 +109,94 @@ Từ đó mình vào lấy được ssh key của user root.
 
 Từ đây thì khá là dễ dàng :))))
 
+## That's an unexpected one
 
+Sau khi có root ở trên, mình tìm kiếm các file trên server thì mình thấy được code trong thư mục `/opt/deployment`
 
+Mình truy cập thì thấy thư mục .git, tuy nhiên trong code không có nhiều thông tin lắm, mục đích của mình vẫn là làm sao để lấy được AWS key. 
 
+Mình có ý tưởng là check git log xem thế nào
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit1.png)
+
+Yeah!!, có 1 đoạn mô tả 'remove env config'
+
+Mình thử đọc đoạn commit đó xem nội dung như thế nào
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit2.png)
+
+vậy là mình lấy được AWS key và thực hiện cấu hình key vào aws cli bằng lệnh
+
+```
+aws configure
+```
+
+Mình thực hiện call identity xem key này được gắn cho user nào
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit3.png)
+
+User cho role này là `daneil`, mình export vào biến môi trường trên server để thực hiện chạy rool recon `weirdAAL` và được kết quả
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit4.png)
+
+Gateway API được cho phép call từ bên ngoài. Mình sẽ tìm xem url cho api này là như thế nào
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit5.png)
+
+theo như tài liệu của aws thì url mặc định sẽ là
+
+```
+https://{api_id}.execute-api.{region}.amazonaws.com
+```
+
+từ đó mình có thể tạo lại link API như sau:
+
+```
+[https://pe1rbyoaod.execute-api.us-east-2.amazonaws.com](https://pe1rbyoaod.execute-api.us-east-2.amazonaws.com/)
+```
+
+Tiếp đến mình thực hiện tìm xem stage_name của API là gì
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit6.png)
+
+stage_name được đặt mặc định là `default`
+
+Vậy mình thực hiện truy vấn API như sau
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit7.png)
+
+OK, đã được mình thực hiện đặt authen là aws key và set key của daniel vào header
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit8.png)
+
+Tuy nhiên vẫn lỗi, mình thực hiện chuyển sang method `POST`
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit9.png)
+
+Như trong code trong thư mục /opt/deployment/Freight-Tracking.php mình có thấy đoạn sau
+
+```
+$result = $client->testInvokeMethod([
+    'body' => 'url=http://10.0.0.11/jobs/invoice.docx',
+    'clientCertificateId' => '103248',
+    'httpMethod' => 'POST',
+    'pathWithQueryString' => '/',
+    'resourceId' => $_ENV['resourceId'],
+    'restApiId' => $_ENV['restApiId'],
+    'stageVariables' => ['default','staging','prod']
+]);
+```
+
+Mình thử thêm biến url vào trong url với 1 link google xem
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit10.png)
+
+Response trả về nội dung của site google,com. Đoạn này mình thử với lỗi SSRF xem. thực hiện đọc file /etc/passwd
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit11.png)
+
+OK, great thế là có lỗi SSRF và có thể đọc được file trên hệ thống. Giờ thì get key và flag thôi.
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit12.png)
+
+## Variety of policies
