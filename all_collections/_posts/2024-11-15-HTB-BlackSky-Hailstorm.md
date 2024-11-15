@@ -230,6 +230,9 @@ và đây là chi tiết policy của v2. Có các action sau:
 
 Xem cả 2 policy v1 và v2 đều đang đặt `AWSLambdaBasicExecutionRole` với iam là `SetDefaultPolicyVersion`. Từ đây mình có thể set policy cho `AWSLambdaBasicExecutionRole`.
 
+```
+aws iam set-default-policy-version --policy-arn arn:aws:iam::864899859472:policy/AWSLambdaBasicExecutionRole --version-id v2
+```
 
 
 
