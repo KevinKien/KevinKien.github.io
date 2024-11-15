@@ -79,4 +79,36 @@ Mình chạy lệnh sau để thực hiện xem kỹ hơn về iam role `web01`
 
 Lệnh trên thì mình lấy được account id là `864899859472`
 
+Mình tiếp tục sử dụng tool để recon xem có các dịch vụ nào đang gán cho role `web01` này bằng tool `weirdAAL` với lệnh: 
+
+```
+python3 weirdAAL.py -m recon_all -t web01
+```
+
+Sau khi chạy xong thì mình lấy được `DesscribeSnapshot` đang allow trên EC2. Mình sẽ thực hiện list `desscribe-snapshots` xem có những thông tin gì
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality5.png)
+
+Tại đây mình thấy được là con EC2 này được cấu hình làm proxy và mình thấy được snapshot này được owner đang public. Từ đây mình có thể tìm xem được là thuộc tính `CreateVolumePermissions` có được public hay không.
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality6.png)
+
+Snapshot này cho phép tất cả mọi người có thể tạo EC2 từ snapshot này. 
+
+Mình thực hiện tạo 1 instance trên aws và thêm volume từ snap id ở trên, vì snapshot public nên mình có thể thực hiện gán vào instance của mình. Sau đó mình sẽ mount vào volume từ instance mới tạo và lấy các file trên đó.
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality7.png)
+
+Sau khi tạo xong thì mình vào server và mount vào volume từ snapshot trên.
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality8.png)
+
+Từ đó mình vào lấy được ssh key của user root.
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/Meta-reality9.png)
+
+Từ đây thì khá là dễ dàng :))))
+
+
+
 
