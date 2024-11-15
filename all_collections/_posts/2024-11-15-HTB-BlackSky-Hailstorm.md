@@ -200,3 +200,22 @@ OK, great thế là có lỗi SSRF và có thể đọc được file trên hệ
 ![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/thatit12.png)
 
 ## Variety of policies
+
+Nào check xem key trên identity như thế nào
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy.png)
+
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy2.png)
+
+
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy3.png)
+
+
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy4.png)
+
+
+
+![](https://raw.githubusercontent.com/KevinKien/KevinKien.github.io/refs/heads/main/assets/img/varietypolicy5.png)
