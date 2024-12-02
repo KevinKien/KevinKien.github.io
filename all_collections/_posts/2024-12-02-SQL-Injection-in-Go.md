@@ -2,7 +2,7 @@
 layout: post
 title: SQL Injection in Go
 date: 2024-12-02
-categories: ["Go", "1-Day-Analysis"]
+categories: ["Golang", "1-Day-Analysis"]
 ---
 
 # Summary
@@ -25,7 +25,43 @@ So to find vulnerability sql injection, I will focus to file Repository. At here
 
 # Analysis CVE-2024-45794
 
+In the CVE-2024-45794, at file repository developer use string concatenate when query to database: 
 
+```
+func (impl UserAuthRepositoryImpl) GetRoleForChartGroupEntity(entity, app, act, accessType string) (RoleModel, error) {
+	var model RoleModel
+	var err error
+	if len(app) > 0 && act == "update" {
+		query := "SELECT role.* FROM roles role WHERE role.entity = ? AND role.entity_name=? AND role.action=?"
+		if len(accessType) == 0 {
+			query = query + " and role.access_type is NULL"
+		} else {
+			query += " and role.access_type='" + accessType + "'"
+		}
+		_, err = impl.dbConnection.Query(&model, query, entity, app, act)
+	} else if app == "" {
+		query := "SELECT role.* FROM roles role WHERE role.entity = ? AND role.action=?"
+		if len(accessType) == 0 {
+			query = query + " and role.access_type is NULL"
+		} else {
+			query += " and role.access_type='" + accessType + "'"
+		}
+		_, err = impl.dbConnection.Query(&model, query, entity, act)
+	}
+	if err != nil {
+		impl.Logger.Errorw("error in getting role for chart group entity", "err", err, "entity", entity, "app", app, "act", act, "accessType", accessType)
+	}
+	return model, err
+}
+```
+
+Vulnerability at `query += " and role.access_type='" + accessType + "'"`. Because, attacker can insert malicious payload as `' or 1=1-- -`.
+So query statement like `query += " and role.access_type='" + ' or 1=1-- - + "'"` => `and role.access_type='' or 1=1-- -`.
+And with payloads malicious attacker can get all data.
 
 # Recommendation
-
+To the fix sql injection in golang, when query statement don't use string concatenate. Please use prepare statement like: 
+```
+query += " and role.access_type = ? "
+queryParams = append(queryParams, accessType)
+```
