@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SAMLStorm: Critical Authentication Bypass in xml-crypto and Node.js libraries
+title: SAMLStorm Critical Authentication Bypass in xml-crypto and Node.js libraries
 date: 2025-03-25
 categories: ["CVE-2025-29775","CVE-2025-29774","SAML protocol"]
 ---
@@ -95,4 +95,14 @@ Dưới đây là giải thích chi tiết từng bước:
 
 ## How an attacker would exploit this vulnerability
 
+Có một số điều kiện chung cần được đáp ứng để khai thác một nhà cung cấp dịch vụ:
 
+1. Nhà cung cấp dịch vụ phải sử dụng xml-crypto.
+2. Kẻ tấn công cần bất kỳ cặp chữ ký và bản tóm lược hợp lệ nào từ một nhà cung cấp danh tính.
+3. Nhà cung cấp dịch vụ cần tin tưởng chứng chỉ của nhà cung cấp danh tính trong cấu hình SAML của mình.
+4. Kẻ tấn công cần có quyền truy cập vào URL ACS, ID thực thể SP và ID thực thể IdP:
+   4.1. URL ACS – Điểm cuối mà Nhà cung cấp danh tính gửi phản hồi xác thực của mình.
+   4.2. ID thực thể SP – Một URI xác định đối tượng của phản hồi SAML.
+   4.3. ID thực thể IdP – Một URI xác định người cấp phát của phản hồi SAML.
+
+Những điều kiện này dẫn đến các trường hợp khai thác sau:
