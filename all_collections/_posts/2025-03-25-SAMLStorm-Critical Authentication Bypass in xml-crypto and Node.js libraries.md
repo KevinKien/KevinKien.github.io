@@ -7,7 +7,7 @@ categories: ["CVE-2025-29775","CVE-2025-29774","SAML protocol"]
 
 Lỗ hổng SAMLStorm ảnh hưởng đến thư viện xml-crypto Node.js (phiên bản 6.0.0 và trước đó, CVE-2025-29775 & CVE-2025-29774), với bản vá được giới thiệu trong phiên bản 6.0.1 và được backport đến phiên bản 3.2.1 và 2.1.6. Nó cũng ảnh hưởng đến các thực thi SAML của Node.js bao gồm @node-saml/node-saml, samlify, saml2-js, samlp, saml2-suomifi và các gói khác. Tổng thể, các gói này có hơn 500k lượt tải mỗi tuần.
 
-Chi tiết kỹ thuật đầy đủ củaloit này, cách nó hoạt động và các bước khắc phục cho dịch vụ không phải WorkOS được đề cập bên dưới.
+Chi tiết kỹ thuật đầy đủ của lỗi này, cách nó hoạt động và các bước khắc phục cho dịch vụ không phải WorkOS được đề cập bên dưới.
 
 ## How this zero-day enables full account takeovers
 
