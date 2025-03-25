@@ -22,7 +22,7 @@ Có hai lỗ hổng tương tự nhưng khác biệt trong xml-crypto, được 
 
 Để hiểu về lỗ hổng này, trước tiên chúng ta cần hiểu một chút về cách thức hoạt động của SAML.
 
-[](https://cdn.prod.website-files.com/621f84dc15b5ed16dc85a18a/67d22e2584f34364f3f615f5_image%20(3).png)
+![](https://cdn.prod.website-files.com/621f84dc15b5ed16dc85a18a/67d22e2584f34364f3f615f5_image%20(3).png)
 
 Hình ảnh mô tả luồng xác thực SAML (Security Assertion Markup Language) giữa ba thành phần chính:
 - Identity Provider (IdP) – Nhà cung cấp danh tính, nơi quản lý thông tin đăng nhập của người dùng.
@@ -38,6 +38,7 @@ Dưới đây là giải thích chi tiết từng bước:
 - SP chuyển hướng trình duyệt của người dùng đến IdP bằng SAML Request
   - SP gửi một yêu cầu xác thực SAML (SAML AuthnRequest) đến IdP thông qua trình duyệt của người dùng.
   - Trình duyệt chuyển tiếp yêu cầu này đến IdP.
+ 
 ### IdP-Initiated Flow (Dòng khởi tạo từ IdP)
 - IdP nhận yêu cầu SAML và kiểm tra thông tin
   - IdP nhận được yêu cầu và kiểm tra xem người dùng đã đăng nhập hay chưa.
@@ -100,9 +101,77 @@ Có một số điều kiện chung cần được đáp ứng để khai thác 
 1. Nhà cung cấp dịch vụ phải sử dụng xml-crypto.
 2. Kẻ tấn công cần bất kỳ cặp chữ ký và bản tóm lược hợp lệ nào từ một nhà cung cấp danh tính.
 3. Nhà cung cấp dịch vụ cần tin tưởng chứng chỉ của nhà cung cấp danh tính trong cấu hình SAML của mình.
-4. Kẻ tấn công cần có quyền truy cập vào URL ACS, ID thực thể SP và ID thực thể IdP:
+4. Kẻ tấn công cần có quyền truy cập vào URL ACS, SP Entity ID và IdP Entity ID:
    4.1. URL ACS – Điểm cuối mà Nhà cung cấp danh tính gửi phản hồi xác thực của mình.
-   4.2. ID thực thể SP – Một URI xác định đối tượng của phản hồi SAML.
-   4.3. ID thực thể IdP – Một URI xác định người cấp phát của phản hồi SAML.
+   4.2. SP Entity ID – Một URI xác định đối tượng của phản hồi SAML.
+   4.3. IdP Entity ID – Một URI xác định người cấp phát của phản hồi SAML.
 
 Những điều kiện này dẫn đến các trường hợp khai thác sau:
+
+### Attack path 1: full access without an account
+
+Cách thức tấn công của kẻ tấn công không có danh tính trong nhà cung cấp danh tính:
+
+![](https://cdn.prod.website-files.com/621f84dc15b5ed16dc85a18a/67d22e6201a27204cb96e60f_image%20(4).png)
+
+1. Truy cập ứng dụng mục tiêu bằng một email chuyển hướng đến một nhà cung cấp danh tính có siêu dữ liệu được ký công khai. Lưu ý rằng đây không phải là lỗ hổng bảo mật trong các nhà cung cấp danh tính này—they chỉ cung cấp thông tin mà kẻ tấn công có thể sử dụng để khai thác lỗ hổng trong xml-crypto.
+2. Khi cố gắng đăng nhập, một yêu cầu SAML sẽ được phát hành, từ đó bạn có thể lấy URL ACS và SP Entity ID, điều này cần thiết để tạo phản hồi SAML
+3. Lấy thông tin chứng chỉ và chữ ký, cũng như IdP Entity ID, từ siêu dữ liệu công khai
+4. Tạo một phản hồi SAML với chứng chỉ và giá trị đã ký từ siêu dữ liệu
+5. Chỉnh sửa khẳng định SAML
+6. Tính toán lại giá trị DigestValue và chèn nó dưới dạng chú thích trước giá trị tiêu hóa hiện có trong nút DigestValue
+7. Gửi yêu cầu với phản hồi SAML đã tạo đến URL ACS
+8. Nhà cung cấp dịch vụ xác thực phản hồi, và bạn đã xác thực
+
+Lưu ý rằng trường hợp khai thác này một phần dựa trên luồng khởi tạo bởi SP để lấy URL ACS và SP Entity ID, nhưng đôi khi URL ACS và SP Entity ID là có thể đoán trước và được tài liệu hóa.Đây là ví dụ về một phản hồi SAML đã bị can thiệp:
+
+```
+<saml2p:Response Destination="acsurl" ID="id1857861521424404880641928" ...>
+    ...
+    <saml2:Assertion ID="id1857861521593646366230134" ...>
+        <saml2:Issuer>samlissuer</saml2:Issuer>
+        <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:SignedInfo>
+                <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+                <ds:Reference URI="#id1857861521593646366230134">
+                    ...
+                    <ds:DigestValue><!--3YjA3OTNjZWQ1GI5YjljNjgzOWZiZWI5OWY1ZTk1ZDk=-->puw8MLNZ67893HzfgbpLjGPfsdSBJueFbcSw2neguIuk=</ds:DigestValue>
+                </ds:Reference>
+            </ds:SignedInfo>
+            <ds:SignatureValue>assertionsignaturevalue</ds:SignatureValue>
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>x509certificate</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </ds:Signature>
+        <saml2:Subject xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+            ...
+        </saml2:Subject>
+        ...
+        <saml2:AttributeStatement>
+            <saml2:Attribute Name="id">
+                <saml2:AttributeValue ...>idp-id</saml2:AttributeValue>
+            </saml2:Attribute>
+        </saml2:AttributeStatement>
+    </saml2:Assertion>
+</saml2p:Response>
+```
+
+### Attack path 2: abusing legitimate access for privilege escalation
+
+Có một biến thể của cuộc tấn công này ảnh hưởng đến tất cả các nhà cung cấp dịch vụ sử dụng xml-crypto, bất kể có hay không có siêu dữ liệu đã ký công khai. Tuy nhiên, nó yêu cầu kẻ tấn công phải có một danh tính trong nhà cung cấp danh tính và ít nhất một ứng dụng đã được cấp phép.
+
+![](https://cdn.prod.website-files.com/621f84dc15b5ed16dc85a18a/67d43360725b4244f4ddac53_Scenario%202.png)
+
+1. Cố gắng đăng nhập vào nhà cung cấp dịch vụ bằng luồng khởi tạo bởi IdP hoặc SP.
+2. Chặn yêu cầu đến URL ACS chứa phản hồi SAML.
+3. Chỉnh sửa khẳng định SAML theo nhu cầu.
+4. Tính toán lại bản tóm lược của khẳng định SAML và chèn giá trị bản tóm lược mới dưới dạng chú thích trong nút DigestValue của chữ ký SAML.
+5. Thay thế phản hồi SAML trong yêu cầu bằng phản hồi SAML đã tạo của bạn.
+6. Chuyển tiếp yêu cầu đến URL ACS.
+7. Nhà cung cấp dịch vụ xác thực phản hồi, và bạn đã xác thực.
+
+## Breaking the chain of trust: How xml-crypto fails
+
