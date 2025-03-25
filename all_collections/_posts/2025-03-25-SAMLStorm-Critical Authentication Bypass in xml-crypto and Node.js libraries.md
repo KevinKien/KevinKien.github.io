@@ -11,14 +11,15 @@ Chi tiết kỹ thuật đầy đủ của lỗi này, cách nó hoạt động 
 
 ## How this zero-day enables full account takeovers
 
-Trước khi đi sâu vào chi tiết của giao thức SAML và cách thức hoạt động của lỗ hổng này, điều quan trọng là trước tiên cần nêu ra tác động tiềm năng ở cấp độ cao.
+Trước khi đi vào chi tiết về giao thức SAML và cách thức hoạt động của lỗ hổng này, trước tiên cần xác định mức độ ảnh hưởng tiềm tàng ở cấp độ cao.
 
-Bất kỳ công ty nào cung cấp dịch vụ SSO qua SAML mà sử dụng thư viện xml-crypto đều có nguy cơ. Trong trường hợp xấu nhất, một kẻ tấn công bên ngoài có thể tạo ra các khẳng định tùy ý cho một nhà cung cấp danh tính SAML (IdP), có thể dẫn đến việc chiếm quyền truy cập đầy đủ vào các nhà cung cấp dịch vụ bị ảnh hưởng, tùy thuộc vào các biện pháp bảo mật của họ.
-Lỗ hổng này không yêu cầu sự tương tác của người dùng, nghĩa là kẻ tấn công có thể giành quyền truy cập không được ủy quyền vào ứng dụng mục tiêu với đặc quyền được nâng cao.
+Bất kỳ công ty nào cung cấp dịch vụ SSO thông qua SAML và sử dụng thư viện xml-crypto đều có nguy cơ bị tấn công. Trong trường hợp xấu nhất, một kẻ tấn công bên ngoài có thể giả mạo các assertion tùy ý cho một nhà cung cấp danh tính SAML (IdP), dẫn đến nguy cơ chiếm quyền kiểm soát hoàn toàn tài khoản trong các nhà cung cấp dịch vụ bị ảnh hưởng, tùy thuộc vào các biện pháp bảo mật của họ.
+
+Cuộc tấn công này không yêu cầu bất kỳ sự tương tác nào từ người dùng, có nghĩa là kẻ tấn công có thể truy cập trái phép vào ứng dụng mục tiêu với các đặc quyền nâng cao.
 
 ## SAML basics: understanding the attack surface
 
-Có hai lỗ hổng tương tự nhưng khác biệt trong xml-crypto, được đại diện bởi CVE-2025-29775 và CVE-2025-29774, lỗ hổng đầu tiên có thể khai thác qua node-saml và lỗ hổng thứ hai thì không. Để ngắn gọn, bài viết này chỉ tập trung vào lỗ hổng và vector khai thác ảnh hưởng đến việc sử dụng node-saml, và đã được báo cáo ban đầu cho WorkOS.
+Có hai lỗ hổng tương tự nhưng khác biệt trong xml-crypto, được đại diện bởi CVE-2025-29775 và CVE-2025-29774, lỗ hổng đầu tiên có thể khai thác qua node-saml và lỗ hổng thứ hai thì không. Để ngắn gọn, bài viết này chỉ tập trung vào lỗ hổng và vector khai thác ảnh hưởng đến việc sử dụng node-saml, và đã được báo cáo cho WorkOS.
 
 Để hiểu về lỗ hổng này, trước tiên chúng ta cần hiểu một chút về cách thức hoạt động của SAML.
 
@@ -175,3 +176,58 @@ Có một biến thể của cuộc tấn công này ảnh hưởng đến tất
 
 ## Breaking the chain of trust: How xml-crypto fails
 
+Để một nhà cung cấp dịch vụ SAML có thể an toàn tin tưởng một khẳng định trong phản hồi SAML, nó phải xác thực chữ ký mật mã của IdP. Chuỗi tin cậy này bắt đầu với chứng chỉ X.509 của IdP, mở rộng đến chữ ký trên khối SignedInfo, bao gồm bản tóm lược của khẳng định trong SignedInfo, và kết thúc với chính khẳng định đó.
+
+Bức tranh dưới đây minh họa cách chuỗi tin cậy bị đứt trong cuộc tấn công SAMLStorm.
+
+![](https://cdn.prod.website-files.com/621f84dc15b5ed16dc85a18a/67d433b16eda7a1fa45cb1fa_Chain%20of%20trust.png)
+
+Trong thư viện xml-crypto, quá trình kiểm tra băm của assertion đảm bảo rằng giá trị băm trong khối SignedInfo khớp chính xác với assertion, trong khi kiểm tra chữ ký xác minh rằng chữ ký hợp lệ dựa trên chứng chỉ của IdP và khối SignedInfo. Trong điều kiện hoạt động bình thường, chữ ký bảo vệ assertion khỏi bị chỉnh sửa, vì giá trị băm của assertion được bao gồm trong khối SignedInfo.
+
+Vấn đề cốt lõi của lỗ hổng này là hai quá trình kiểm tra đánh giá tài liệu SAML theo cách khác nhau. Các tài liệu SAML trải qua quá trình chuẩn hóa (canonicalization), một bước loại bỏ các bình luận XML. Tuy nhiên, kiểm tra băm của assertion được thực hiện trên tài liệu chưa được chuẩn hóa (vẫn giữ nguyên bình luận), trong khi kiểm tra chữ ký được thực hiện trên tài liệu đã chuẩn hóa (đã loại bỏ bình luận). Sự không đồng nhất này tạo ra cơ hội khai thác bằng cách chèn một giá trị băm giả mạo bên trong một bình luận, như minh họa bên dưới.
+
+```
+<DigestValue><!-- forged_digest -->legitimate_digest</DigestValue>
+```
+
+Trong đoạn mã dễ bị tấn công, quá trình kiểm tra băm (digest check) của SAML assertion lấy phần tử con đầu tiên của nút DigestValue. Thông thường, đây là giá trị băm mong đợi, nhưng kẻ tấn công có thể chèn một bình luận XML chứa giá trị băm giả mạo của một assertion tùy ý trước giá trị băm hợp lệ. Kết quả là quá trình kiểm tra băm của assertion vô tình sử dụng giá trị băm do kẻ tấn công cung cấp.
+
+Trong khi đó, quá trình kiểm tra chữ ký (signature check) được thực hiện trên khối SignedInfo sau khi nó đã được chuẩn hóa (canonicalized). Vì bình luận độc hại bị loại bỏ trong quá trình chuẩn hóa, chỉ còn lại giá trị băm của assertion hợp lệ ban đầu, cho phép kiểm tra chữ ký thành công.
+
+Điều này phá vỡ chuỗi tin cậy giữa chứng chỉ và assertion, cho phép kẻ tấn công giả mạo các assertion tùy ý mà nhà cung cấp dịch vụ dễ bị tấn công sẽ chấp nhận là hợp lệ.
+
+## Understanding if your application may be impacted 
+
+Bất kỳ khách hàng nào của một nhà cung cấp dịch vụ (Service Provider - SP) sử dụng phiên bản dễ bị tấn công của thư viện xml-crypto đều có nguy cơ bị tấn công. Tuy nhiên, mức độ rủi ro phụ thuộc vào từng nhà cung cấp dịch vụ cụ thể và việc kẻ tấn công có danh tính trong một nhà cung cấp danh tính (Identity Provider - IdP) hay không. Nếu kẻ tấn công có một danh tính từ bất kỳ IdP nào được kết nối với nhà cung cấp dịch vụ, họ có thể khai thác lỗ hổng này đối với bất kỳ nhà cung cấp danh tính SAML nào, miễn là nhà cung cấp dịch vụ phụ thuộc vào xml-crypto.
+
+Nếu kẻ tấn công không có danh tính trong IdP, họ vẫn có thể khai thác lỗ hổng này—nhưng chỉ đối với các nhà cung cấp danh tính có ký metadata của họ. Nhiều IdP lớn ký metadata của họ. Mặc dù đây không phải là một lỗ hổng bảo mật trong các IdP này, nhưng nó vẫn làm lộ thông tin mà kẻ tấn công có thể lợi dụng để khai thác lỗi trong xml-crypto.
+
+Nếu một ứng dụng không tự xác minh quyền sở hữu tài khoản, kẻ tấn công có thể giả mạo xác thực cho bất kỳ người dùng nào trong tổ chức, bao gồm cả quản trị viên, và leo thang đặc quyền bằng cách sử dụng thuộc tính SAML hoặc phân quyền nhóm từ IdP. Ngoài ra, nếu một ứng dụng không giới hạn những người dùng mà IdP được phép xác thực, kẻ tấn công có thể giả mạo xác thực cho bất kỳ người dùng nào trong ứng dụng của nhà cung cấp dịch vụ, bất kể ranh giới tổ chức.
+
+## Recommendations for impacted organizations
+
+### Short-term recommendations 
+
+Đối với các công ty
+
+WorkOS đã vá lỗ hổng này và xác nhận rằng không có hệ thống hay khách hàng nào bị ảnh hưởng. Tuy nhiên, các hệ thống xác thực không thuộc WorkOS có thể vẫn đang gặp rủi ro. Chúng tôi khuyến nghị các bước sau:
+- Liên hệ với bất kỳ ứng dụng nào mà bạn xác thực thông qua SAML SSO để hỏi xem họ có bị ảnh hưởng không và rủi ro còn lại là gì.
+- Xem xét nhật ký kiểm tra (audit logs) trong các ứng dụng bị ảnh hưởng để phát hiện bất kỳ đăng nhập hoặc hoạt động đáng ngờ nào.
+
+Đối với các nhà cung cấp dịch vụ
+- Kiểm tra xem triển khai SAML của bạn có sử dụng gói xml-crypto hay không.
+- Nếu có, hãy xem xét nhật ký SAML để tìm dấu hiệu khai thác. Cụ thể, hãy kiểm tra xem có bình luận XML được nhúng trong trường DigestValue của phản hồi hay không, ví dụ:
+
+```
+<DigestValue><!-- forged_digest -->legitimate_digest</DigestValue>
+```
+
+### Long-term recommendations
+
+Đối với các công ty
+- Thường xuyên đánh giá mức độ rủi ro của tổ chức bạn đối với các ứng dụng được bảo vệ bằng SSO và duy trì một danh sách cập nhật về tất cả các nhà cung cấp này, bao gồm thông tin liên hệ bảo mật và loại dữ liệu được lưu trữ bởi từng nhà cung cấp.
+- Lựa chọn các nhà cung cấp hỗ trợ đầy đủ khả năng ghi nhật ký kiểm tra bảo mật, giúp bạn có thể tự đánh giá quyền truy cập vào dữ liệu của mình khi cần.
+
+Đối với các nhà cung cấp dịch vụ
+- Đảm bảo rằng các tenant được bảo vệ bởi SSO được cô lập đúng cách và áp dụng nguyên tắc đặc quyền tối thiểu (Principle of Least Privilege) đối với IdP. Ví dụ, WorkOS giảm thiểu nguy cơ truy cập chéo giữa các tenant theo mặc định bằng cách hỗ trợ giới hạn miền danh tính theo từng tổ chức.
+- Nhìn chung, việc kiểm tra dữ liệu nhận được có tuân theo các tiêu chuẩn mong đợi trước khi xử lý là một cơ chế phòng thủ quan trọng chống lại các lỗ hổng chưa được biết đến. Hãy áp dụng nguyên tắc này vào phản hồi SAML để đảm bảo cấu trúc của chúng khớp với mong đợi, đặc biệt là đối với chứng chỉ, chữ ký và giá trị băm trong chuỗi tin cậy. Ví dụ, thư viện node-saml không bị ảnh hưởng bởi phương thức khai thác trong CVE-2025-29774 vì nó kiểm tra xem số lượng tham chiếu trong khối SignedInfo có khớp với giá trị mong đợi là một hay không, trước khi chuyển phản hồi đến xml-crypto để xác thực thêm.
